@@ -24,7 +24,8 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private Animator playerAnimator;
-    private bool isWalking = false;
+    [SerializeField] private float playerAnimatorWalkSpeed = 2f;
+    private int walkingDirection = 0;
 
     void Start()
     {
@@ -37,11 +38,11 @@ public class PlayerMovementController : MonoBehaviour
 
         if (Mathf.Abs(moveInput.x) > 0 || Mathf.Abs(moveInput.y) > 0)
         {
-            isWalking = true;
+            walkingDirection =moveInput.y > 0 ? 1 : 2;
         }
         else
         {
-            isWalking = false;
+            walkingDirection = 0;
         }
     }
 
@@ -79,6 +80,8 @@ public class PlayerMovementController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
 
-        playerAnimator.SetBool("IsWalking", isWalking); 
+        Debug.Log(walkingDirection);
+        playerAnimator.SetInteger("WalkingDirection", walkingDirection); 
+        playerAnimator.SetFloat("WalkingSpeed", playerAnimatorWalkSpeed); 
     }
 }
