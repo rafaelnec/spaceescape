@@ -9,13 +9,22 @@ public class PlayerMovementController : MonoBehaviour
 
     private Vector2 moveInput;
     private Vector2 lookInput;
+    private Vector3 velocity;
+    private bool isGrounded;
 
     public float moveSpeed = 5f;
     public float lookSpeed = 2f;
+    public float gravity = -9.81f;
+
     
     public Transform playerCamera;
 
     private float xRotation = 0f;
+    private float yRotation = 0f;
+
+    [Header("Animation")]
+    [SerializeField] private Animator playerAnimator;
+    private bool isWalking = false;
 
     void Start()
     {
@@ -25,6 +34,15 @@ public class PlayerMovementController : MonoBehaviour
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>(); 
+
+        if (Mathf.Abs(moveInput.x) > 0 || Mathf.Abs(moveInput.y) > 0)
+        {
+            isWalking = true;
+        }
+        else
+        {
+            isWalking = false;
+        }
     }
 
     public void OnLook(InputValue value)
@@ -35,12 +53,20 @@ public class PlayerMovementController : MonoBehaviour
     void Update()
     {
 
+        isGrounded = controller.isGrounded;
+
+        // Reset vertical velocity when grounded to prevent endless accumulation
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f; // Small downward force to keep them on the ground
+        }
+
         Vector3 moveDirection = transform.forward * moveInput.y + transform.right * moveInput.x;
         // transform.position += moveDirection * moveSpeed * Time.deltaTime;
         controller.Move(moveDirection * moveSpeed * Time.deltaTime);
 
-        // velocity.y += gravity * Time.deltaTime;
-        // controller.Move(velocity * Time.deltaTime);
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
 
         float mouseX = lookInput.x * lookSpeed * Time.deltaTime;
         float mouseY = lookInput.y * lookSpeed * Time.deltaTime;
@@ -52,5 +78,7 @@ public class PlayerMovementController : MonoBehaviour
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         Cursor.lockState = CursorLockMode.Locked;
+
+        playerAnimator.SetBool("IsWalking", isWalking); 
     }
 }
