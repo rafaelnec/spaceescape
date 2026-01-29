@@ -20,7 +20,6 @@ public class PlayerMovementController : MonoBehaviour
     public Transform playerCamera;
 
     private float xRotation = 0f;
-    private float yRotation = 0f;
 
     [Header("Animation")]
     [SerializeField] private Animator playerAnimator;
@@ -80,7 +79,6 @@ public class PlayerMovementController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
 
-        Debug.Log(walkingDirection);
         playerAnimator.SetInteger("WalkingDirection", walkingDirection); 
         playerAnimator.SetFloat("WalkingSpeed", playerAnimatorWalkSpeed); 
     }
