@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Environment
+  - PlayerHead
   layers:
   - Default
   - TransparentFX
@@ -14,8 +15,8 @@ TagManager:
   - Water
   - UI
   - Player Body
+  - Player Head
   - Environment
-  - 
   - 
   - 
   - 

@@ -13,8 +13,15 @@ public class PlayerMovementController : MonoBehaviour
     private bool isGrounded;
 
     public float moveSpeed = 5f;
+    public float moveRunningSpeed = 0.5f;
     public float lookSpeed = 2f;
     public float gravity = -9.81f;
+
+
+    [Header("Actions")]
+    private InputAction moveAction;
+    private InputAction sprintAction;
+    private InputAction lookAction;
 
     
     public Transform playerCamera;
@@ -23,53 +30,55 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private Animator playerAnimator;
-    [SerializeField] private float playerAnimatorWalkSpeed = 2f;
-    private int walkingDirection = 0;
+    [SerializeField] private float playerAnimatioMoveSpeed = 2f;
+    private bool isRunning = false;
+    
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
-    }
-
-    public void OnMove(InputValue value)
-    {
-        moveInput = value.Get<Vector2>(); 
-
-        if (Mathf.Abs(moveInput.x) > 0 || Mathf.Abs(moveInput.y) > 0)
-        {
-            walkingDirection =moveInput.y > 0 ? 1 : 2;
-        }
-        else
-        {
-            walkingDirection = 0;
-        }
-    }
-
-    public void OnLook(InputValue value)
-    {
-        lookInput = value.Get<Vector2>(); 
+        moveAction = InputSystem.actions.FindAction("Move");
+        sprintAction = InputSystem.actions.FindAction("Sprint");
+        lookAction  = InputSystem.actions.FindAction("Look");
     }
 
     void Update()
     {
+        ReadInputActions();
+        MovePlayer();
+        AnimatePlayer();
+    }
 
+    private void ReadInputActions()
+    {
+        moveInput = moveAction.ReadValue<Vector2>();
+        lookInput = lookAction.ReadValue<Vector2>();
+       
+        if (sprintAction.WasPerformedThisFrame()) isRunning  = true;
+        if (sprintAction.WasCompletedThisFrame()) isRunning  = false;             
+    } 
+
+    private void MovePlayer()
+    {
         isGrounded = controller.isGrounded;
+        float speed = moveSpeed;
+        float mouseSpeed =lookSpeed;
 
-        // Reset vertical velocity when grounded to prevent endless accumulation
-        if (isGrounded && velocity.y < 0)
+        if (isGrounded && velocity.y < 0) velocity.y = -2f;
+        if (isRunning)
         {
-            velocity.y = -2f; // Small downward force to keep them on the ground
-        }
+            mouseSpeed += moveRunningSpeed;  
+            speed += moveRunningSpeed;
+        } 
 
         Vector3 moveDirection = transform.forward * moveInput.y + transform.right * moveInput.x;
-        // transform.position += moveDirection * moveSpeed * Time.deltaTime;
-        controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+        controller.Move(moveDirection * speed * Time.deltaTime);
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
-        float mouseX = lookInput.x * lookSpeed * Time.deltaTime;
-        float mouseY = lookInput.y * lookSpeed * Time.deltaTime;
+        float mouseX = lookInput.x * mouseSpeed * Time.deltaTime;
+        float mouseY = lookInput.y * mouseSpeed * Time.deltaTime;
 
         transform.Rotate(Vector3.up * mouseX);
 
@@ -78,8 +87,18 @@ public class PlayerMovementController : MonoBehaviour
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         Cursor.lockState = CursorLockMode.Locked;
-
-        playerAnimator.SetInteger("WalkingDirection", walkingDirection); 
-        playerAnimator.SetFloat("WalkingSpeed", playerAnimatorWalkSpeed); 
     }
+
+    private void AnimatePlayer()
+    {
+        int moveState;
+        if (isRunning) moveState  = 2;
+        else if (moveAction.IsPressed()) moveState = 1;
+        else if (lookAction.WasPerformedThisFrame()) moveState = 3;
+        else  moveState = 0;
+
+        playerAnimator.SetInteger("MoveState", moveInput.y > 0 ? moveState : -moveState);
+        playerAnimator.SetFloat("MoveSpeed", playerAnimatioMoveSpeed);
+    }
+    
 }
