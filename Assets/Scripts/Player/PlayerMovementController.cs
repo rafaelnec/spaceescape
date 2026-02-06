@@ -32,6 +32,9 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private float playerAnimatioMoveSpeed = 2f;
     private bool isRunning = false;
+    private Vector3 previousPosition;
+    private Quaternion previousRotation;
+    private int previousMoveState;
     
 
     void Start()
@@ -40,12 +43,20 @@ public class PlayerMovementController : MonoBehaviour
         moveAction = InputSystem.actions.FindAction("Move");
         sprintAction = InputSystem.actions.FindAction("Sprint");
         lookAction  = InputSystem.actions.FindAction("Look");
+
+        previousPosition = transform.position;
+        previousRotation = transform.rotation;
     }
 
     void Update()
     {
         ReadInputActions();
         MovePlayer();
+        // AnimatePlayer();
+    }
+
+    void FixedUpdate()
+    {
         AnimatePlayer();
     }
 
@@ -91,14 +102,34 @@ public class PlayerMovementController : MonoBehaviour
 
     private void AnimatePlayer()
     {
-        int moveState;
-        if (isRunning) moveState  = 2;
-        else if (moveAction.IsPressed()) moveState = 1;
-        else if (lookAction.WasPerformedThisFrame()) moveState = 3;
-        else  moveState = 0;
+        if (transform.position != previousPosition || transform.rotation != previousRotation)
+        {
+            int moveState;
 
-        playerAnimator.SetInteger("MoveState", moveInput.y > 0 ? moveState : -moveState);
-        playerAnimator.SetFloat("MoveSpeed", playerAnimatioMoveSpeed);
+            if (moveAction.IsPressed())
+            {
+                if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
+                {
+                    if (moveInput.x > 0) moveState = 4;
+                    else moveState = -4;
+                }
+                else if (isRunning) moveState  = 2;
+                else moveState = 1;
+            } 
+            else if (lookAction.WasPerformedThisFrame()) moveState = 3;    
+            else moveState = 0; 
+
+            Debug.Log("Animation " + moveState);
+            Debug.Log("Move Speed " + playerAnimatioMoveSpeed);
+            playerAnimator.SetInteger("MoveState", moveInput.y > 0 ? moveState : -moveState);
+            playerAnimator.SetFloat("MoveSpeed", playerAnimatioMoveSpeed);
+
+            previousPosition = transform.position;
+            previousRotation = transform.rotation;
+        } else
+        {
+            playerAnimator.SetInteger("MoveState", 0);
+        }
     }
     
 }

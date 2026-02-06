@@ -68,5 +68,10 @@ public class PlayerCameraSwitch : MonoBehaviour
         }
     }
 
+    public void EnableThridCamera()
+    {
+        SetPrimaryCamera(thirdPersonCamera);
+    }
+
 }
 
