@@ -24,5 +24,13 @@ public class Scene01 : MonoBehaviour
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
     }
+
+    public void OnLoadMusic()
+    {
+        MusicManager musicManager = FindFirstObjectByType<MusicManager>();
+        if (musicManager != null) {
+            musicManager.StartBkgMusic();
+        }
+    }
 }
 

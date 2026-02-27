@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4cad32e57ed7c84b8581d777a9af590, type: 3}
+  m_Name: AccessCardLvl01
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryItem
+  id: access_card_lvl_01
+  itemName: Access Card Level 01
+  weight: 0.1
+  type: 0
+  icon: {fileID: -1960037144, guid: eab773602b7640047ba11b56ed80c1e3, type: 3}
+  prefab: {fileID: 5992235658769049566, guid: 040aaa96ac386064499356fd9a0fc4f9, type: 3}

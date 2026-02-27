@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Environment
   - PlayerHead
+  - Collectible
   layers:
   - Default
   - TransparentFX

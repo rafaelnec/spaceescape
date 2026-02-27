@@ -9,13 +9,18 @@ public class PadTrigger : MonoBehaviour
     public GameObject displayLock;
     public GameObject displayUnlock;
 
+    public string requiredItemId = "access_card_lvl_01";
+    private bool hasRequiredItem = false;
+
     private bool isDoorLock = true;
     
     private InputAction interactAction;
+    private InventoryManager inventoryManager;
 
     void Start()
     {
         interactAction = InputSystem.actions.FindAction("Interact");
+        inventoryManager = FindFirstObjectByType<InventoryManager>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -25,7 +30,7 @@ public class PadTrigger : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if (interactAction.WasReleasedThisFrame())
+        if (interactAction.WasReleasedThisFrame() && hasRequiredItem)
         {
             onPadClicked.Invoke();
             isDoorLock = false;
@@ -43,6 +48,9 @@ public class PadTrigger : MonoBehaviour
     {
         displayLock.SetActive(isDoorLock);
         displayUnlock.SetActive(!isDoorLock);
+        if (inventoryManager != null) {
+            hasRequiredItem = inventoryManager.currentItems.Exists(item => item.id == requiredItemId);
+        }
     }
 
 }

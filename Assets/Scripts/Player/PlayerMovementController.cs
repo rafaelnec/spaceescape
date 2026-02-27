@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
@@ -50,6 +51,9 @@ public class PlayerMovementController : MonoBehaviour
 
     void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject()) {
+            return; // Don't move the character!
+        }
         ReadInputActions();
         MovePlayer();
         // AnimatePlayer();
@@ -99,39 +103,6 @@ public class PlayerMovementController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
     }
-
-    // private void AnimatePlayer()
-    // {
-        
-    //     if (transform.position != previousPosition || transform.rotation != previousRotation)
-    //     {
-    //         int moveState;
-
-    //         if (moveAction.IsPressed())
-    //         {
-    //             if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
-    //             {
-    //                 if (moveInput.x > 0) moveState = 4;
-    //                 else moveState = -4;
-    //             }
-    //             else if (isRunning) moveState  = 2;
-    //             else moveState = 1;
-    //         } 
-    //         else if (lookAction.WasPerformedThisFrame()) moveState = 3;    
-    //         else moveState = 0; 
-
-    //         Debug.Log("Animation " + moveState);
-    //         Debug.Log("Move Speed " + playerAnimatioMoveSpeed);
-    //         playerAnimator.SetInteger("MoveState", moveInput.y > 0 ? moveState : -moveState);
-    //         playerAnimator.SetFloat("MoveSpeed", playerAnimatioMoveSpeed);
-
-    //         previousPosition = transform.position;
-    //         previousRotation = transform.rotation;
-    //     } else
-    //     {
-    //         playerAnimator.SetInteger("MoveState", 0);
-    //     }
-    // }
 
     private void AnimatePlayer()
     {
